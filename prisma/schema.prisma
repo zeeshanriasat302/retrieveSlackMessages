@@ -9,8 +9,28 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 model User {
-  id            Int        @id @default(autoincrement()) @map("_id")
-  firstName     String?
-  lastName      String?
+  id        Int      @id @default(autoincrement())
+  slackId   String   @unique
+  name      String
+  afks      Afk[]
+  sessions  Session[]
+}
+model Session {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  signIn     DateTime
+  signOut    DateTime?
+  afks       Afk[]
+}
+model Afk {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+  sessionId  Int
+  session    Session  @relation(fields: [sessionId], references: [id])
+  afkStart   DateTime
+  back       DateTime?
 }
